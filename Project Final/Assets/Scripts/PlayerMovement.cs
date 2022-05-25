@@ -46,7 +46,9 @@ public class PlayerMovement : MonoBehaviour
             lookDirection.Normalize();
         }
 
-      
+        animator.SetFloat("Look X", lookDirection.x);
+        animator.SetFloat("Look Y", lookDirection.y);
+        animator.SetFloat("Speed", move.magnitude);
 
         if (isInvincible)
         {
@@ -54,9 +56,6 @@ public class PlayerMovement : MonoBehaviour
             if (invincibleTimer < 0)
                 isInvincible = false;
         }
-
-
-       
     }
 
     void FixedUpdate()
@@ -78,6 +77,30 @@ public class PlayerMovement : MonoBehaviour
             isInvincible = true;
             invincibleTimer = timeInvincible;
         }
+
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+
+        PlaySound(hitSound);
+
     }
 
-} 
+    void Launch()
+    {
+        GameObject projectileObject = Instantiate(projectilePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
+        Projectile projectile = projectileObject.GetComponent<Projectile>();
+        projectile.Launch(lookDirection, 300);
+
+        animator.SetTrigger("Launch");
+
+        PlaySound(throwSound);
+    }
+
+
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
+
+
+
+}
